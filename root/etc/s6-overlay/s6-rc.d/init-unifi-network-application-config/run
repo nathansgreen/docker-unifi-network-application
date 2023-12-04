@@ -20,8 +20,9 @@ for i in "${symlinks[@]}"; do
 done
 
 if [[ ! -e /config/data/system.properties ]]; then
-    if [[ -z "${MONGO_HOST}" ]]; then
-        echo "*** No MONGO_HOST set, cannot configure database settings. ***"
+    if [[ -z "${MONGO_HOST}" || -z "${MONGO_PORT}" ]]; then
+        echo "*** ${MONGO_HOST:-No MONGO_HOST set. }${MONGO_PORT:-No MONGO_PORT set. }" \
+            "Cannot configure database settings. ***"
         sleep infinity
     else
         echo "*** Waiting for MONGO_HOST ${MONGO_HOST} to be reachable. ***"
@@ -32,7 +33,7 @@ if [[ ! -e /config/data/system.properties ]]; then
             fi
             DBCOUNT=$((DBCOUNT+1))
             if [[ ${DBCOUNT} -gt 6 ]]; then
-                echo "*** Defined MONGO_HOST ${MONGO_HOST} is not reachable, cannot proceed. ***"
+                echo "*** Defined MONGO_HOST ${MONGO_HOST} is not reachable on port ${MONGO_PORT}, cannot proceed. ***"
                 sleep infinity
             fi
             sleep 5
